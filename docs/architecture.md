@@ -14,8 +14,14 @@ Version : Phase 1 (Foundation) — novembre 2026
 | Élément | Développement | Production |
 |---|---|---|
 | Neon | projet `angy-lp`, branche `dev` | projet `angy-lp`, branche `main` |
-| Vercel | Preview | Production |
-| Région | eu-central-1 (Frankfurt) | eu-central-1 (Frankfurt) |
+| Vercel | Preview (branche git `dev`) | Production (branche git `main`) |
+| Région | eu-central-1 / fra1 (Francfort) | eu-central-1 / fra1 (Francfort) |
+
+Projet Vercel `angy-lp` :
+- variables d'environnement définies **uniquement dans Vercel** (secrets en type *sensitive*) ;
+- builds de production **bloqués** par la commande « Ignored Build Step » tant que le fondateur n'a pas validé la mise en production ;
+- déploiements protégés par l'authentification Vercel (hors domaines personnalisés) ;
+- santé : `GET /api/health` vérifie la connexion `angy_lp_web` → `angy_lp_rls` (statut seulement, aucune donnée).
 
 ## 3. Multi-tenancy (accepté — ADR-0001, ADR-0002)
 

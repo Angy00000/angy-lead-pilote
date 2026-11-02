@@ -36,3 +36,15 @@ type OrganizationApi = {
 };
 
 export const organizations = (auth as unknown as { organization: OrganizationApi }).organization;
+
+// --- Vérification d'e-mail par code (Email OTP) -----------------------------
+
+type EmailOtpApi = {
+  sendVerificationOtp(input: {
+    email: string;
+    type: "email-verification" | "sign-in" | "forget-password";
+  }): Promise<ApiResult<unknown>>;
+  verifyEmail(input: { email: string; otp: string }): Promise<ApiResult<{ token?: string | null } | null>>;
+};
+
+export const emailOtp = (auth as unknown as { emailOtp: EmailOtpApi }).emailOtp;

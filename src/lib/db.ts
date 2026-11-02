@@ -57,3 +57,31 @@ export async function withOrganization<T>(
     client.release();
   }
 }
+
+/**
+ * Contrôle de santé : vérifie que la connexion se fait bien avec le rôle
+ * applicatif (sans BYPASSRLS) et que le passage au rôle RLS fonctionne.
+ * Le détail n'est écrit que dans les journaux serveur.
+ */
+export async function checkDatabase(): Promise<boolean> {
+  try {
+    const client = await getPool().connect();
+    try {
+      await client.query("BEGIN");
+      const login = await client.query<{ usr: string; bypass: boolean }>(
+        "SELECT current_user AS usr, rolbypassrls AS bypass FROM pg_roles WHERE rolname = current_user",
+      );
+      await client.query("SET LOCAL ROLE angy_lp_rls");
+      const rls = await client.query<{ usr: string }>("SELECT current_user AS usr");
+      await client.query("ROLLBACK");
+      const ok = login.rows[0]?.usr === "angy_lp_web" && login.rows[0]?.bypass === false && rls.rows[0]?.usr === "angy_lp_rls";
+      if (!ok) console.error("[health] rôles inattendus", login.rows[0], rls.rows[0]);
+      return ok;
+    } finally {
+      client.release();
+    }
+  } catch (e) {
+    console.error("[health] base injoignable", e instanceof Error ? e.message : e);
+    return false;
+  }
+}

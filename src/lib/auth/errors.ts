@@ -9,6 +9,9 @@ const MESSAGES: Record<string, string> = {
   PASSWORD_TOO_SHORT: "Le mot de passe doit contenir au moins 8 caractères.",
   PASSWORD_TOO_LONG: "Le mot de passe est trop long.",
   EMAIL_NOT_VERIFIED: "Veuillez d'abord confirmer votre adresse e-mail.",
+  INVALID_OTP: "Code incorrect. Vérifiez le code reçu par e-mail.",
+  OTP_EXPIRED: "Ce code a expiré. Demandez-en un nouveau.",
+  TOO_MANY_ATTEMPTS: "Trop de tentatives. Demandez un nouveau code.",
   ORGANIZATION_ALREADY_EXISTS: "Ce nom d'organisation est déjà utilisé.",
   YOU_HAVE_REACHED_THE_MAXIMUM_NUMBER_OF_ORGANIZATIONS: "Nombre maximal d'organisations atteint.",
 };

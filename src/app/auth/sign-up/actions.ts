@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/server";
 import { authErrorMessage } from "@/lib/auth/errors";
+import { setPendingEmail } from "@/lib/auth/pending";
 
 export type FormState = { error: string } | null;
 
@@ -19,8 +20,14 @@ export async function signUpWithEmail(_prev: FormState, formData: FormData): Pro
     return { error: "Le mot de passe doit contenir entre 8 et 128 caractères." };
   }
 
-  const { error } = await auth.signUp.email({ name, email, password });
+  const { data, error } = await auth.signUp.email({ name, email, password });
   if (error) return { error: authErrorMessage(error, "Impossible de créer le compte. Réessayez.") };
+
+  // Vérification d'e-mail activée : un code a été envoyé, on passe à sa saisie.
+  if (data?.user && !data.user.emailVerified) {
+    await setPendingEmail(email);
+    redirect("/auth/verify");
+  }
 
   redirect("/onboarding");
 }

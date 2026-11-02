@@ -16,8 +16,8 @@ export function Field({ label, htmlFor, hint, children }: { label: string; htmlF
   );
 }
 
-export function Input(props: InputHTMLAttributes<HTMLInputElement>) {
-  return <input {...props} className={fieldClass} />;
+export function Input({ className, ...props }: InputHTMLAttributes<HTMLInputElement>) {
+  return <input {...props} className={className ? `${fieldClass} ${className}` : fieldClass} />;
 }
 
 export function Select(props: SelectHTMLAttributes<HTMLSelectElement>) {
