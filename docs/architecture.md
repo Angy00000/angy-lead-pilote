@@ -17,18 +17,18 @@ Version : Phase 1 (Foundation) — novembre 2026
 | Vercel | Preview | Production |
 | Région | eu-central-1 (Frankfurt) | eu-central-1 (Frankfurt) |
 
-## 3. Multi-tenancy (proposé — ADR-0001, à valider)
+## 3. Multi-tenancy (accepté — ADR-0001, ADR-0002)
 
-- Tables socle : `organizations`, `memberships` (user ↔ organisation + rôle), `audit_log`.
-- Chaque table métier porte `organization_id NOT NULL`.
-- **RLS activée et forcée** sur toutes les tables métier.
-- L'application se connecte avec un rôle **sans** `BYPASSRLS`. Chaque requête s'exécute dans une transaction qui fixe `app.organization_id` (via `set_config(..., true)`) après vérification serveur de l'appartenance de l'utilisateur.
-- Les politiques RLS comparent `organization_id` à `current_setting('app.organization_id')`.
-- Les migrations utilisent un rôle propriétaire séparé.
+- Identité, organisations et membres : **Neon Auth** (schéma `neon_auth`), source de vérité.
+- Données métier : schéma `app`, chaque table porte `organization_id NOT NULL` → `neon_auth.organization(id)`.
+- Tables socle : `app.organization_settings` (secteur, pays, devise, plan), `app.audit_log` (append-only).
+- **RLS activée et forcée** ; politiques fondées sur `app.has_access(organization_id)` (contexte + appartenance réelle).
+- Connexion applicative : `angy_lp_web` (aucun privilège) → `SET LOCAL ROLE angy_lp_rls` via `withOrganization` (`src/lib/db.ts`).
+- Migrations : `db/migrations/`, appliquées avec `angy_lp_owner`. Tests : `db/tests/`.
 
-## 4. Rôles applicatifs (proposé)
+## 4. Rôles applicatifs
 
-`owner` · `admin` · `manager` · `sales` · `viewer` — vérifiés côté serveur avant toute action.
+`owner` · `admin` · `manager` · `sales` · `viewer` — stockés dans `neon_auth.member.role`, vérifiés côté serveur avant toute action.
 
 ## 5. Modules (feuille de route)
 

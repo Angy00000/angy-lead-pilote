@@ -1,6 +1,6 @@
 # ADR-0001 — Isolation multi-tenant par RLS et contexte de transaction
 
-- Statut : **Proposé** (à valider par le fondateur)
+- Statut : **Accepté** le 2026-11-02 par le fondateur — implémenté (migrations 0001, 0002 ; détail des rôles en ADR-0002)
 - Date : 2026-11-02
 
 ## Contexte
