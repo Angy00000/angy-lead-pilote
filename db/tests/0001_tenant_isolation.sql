@@ -1,8 +1,7 @@
 -- Test d'isolation multi-tenant — à exécuter avec le rôle propriétaire.
 -- Crée deux organisations A et B, tente des accès croisés, puis lève une
 -- exception volontaire : TOUT est annulé, aucune donnée ne reste en base.
--- Résultat attendu : "T00 OK; T0 OK; T0b OK; T1 OK; ... T8 OK".
--- Dernière exécution : 2026-11-02, branche dev — 12/12 OK.
+-- Résultat attendu : "T00 OK; T0 OK; T0b OK; T0c OK; T1 OK; ... T8 OK" (13 tests).
 
 DO $t$
 DECLARE
@@ -25,6 +24,8 @@ BEGIN
   EXCEPTION WHEN insufficient_privilege THEN r := r || 'T0 OK; '; END;
   BEGIN PERFORM count(*) FROM neon_auth.member; r := r || 'T0b ECHEC; ';
   EXCEPTION WHEN insufficient_privilege THEN r := r || 'T0b OK; '; END;
+  BEGIN EXECUTE 'CREATE TEMP TABLE t_probe(x int)'; r := r || 'T0c ECHEC; ';
+  EXCEPTION WHEN insufficient_privilege THEN r := r || 'T0c OK; '; END;
 
   SET LOCAL ROLE angy_lp_rls;
   -- T1 : A voit ses données

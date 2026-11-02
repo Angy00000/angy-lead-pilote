@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 // Page d'attente — Phase 1 (Foundation).
 // Aucune donnée affichée : le dashboard sera branché sur la base réelle
@@ -23,6 +24,20 @@ export default function Home() {
           Find opportunities. Understand buyers. Generate sales.
         </p>
         <div className="mx-auto mt-8 h-1 w-16 rounded-full bg-gradient-to-r from-lp-electric to-lp-cyan" />
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+          <Link
+            href="/auth/sign-up"
+            className="rounded-lg bg-lp-electric px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-lp-deep"
+          >
+            Créer un compte
+          </Link>
+          <Link
+            href="/auth/sign-in"
+            className="rounded-lg border border-border px-5 py-2.5 text-sm font-semibold text-lp-deep transition hover:bg-lp-gray"
+          >
+            Se connecter
+          </Link>
+        </div>
         <p className="mt-6 text-sm text-muted">
           Plateforme en cours de construction — Phase 1 : Foundation.
         </p>

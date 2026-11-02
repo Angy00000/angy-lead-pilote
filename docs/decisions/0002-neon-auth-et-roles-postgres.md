@@ -15,8 +15,12 @@ Il crée le schéma `neon_auth`, qui contient déjà :
 pour les utilisateurs, les organisations et les membres. Les données métier
 d'Angy LP vivent dans le schéma `app` et référencent `neon_auth.organization(id)`.
 
-Les rôles applicatifs (`owner`, `admin`, `manager`, `sales`, `viewer`) sont
-stockés dans `neon_auth.member.role` et vérifiés côté serveur.
+**Limite constatée :** le plugin Organization de Neon Auth n'accepte que les
+rôles `owner`, `admin` et `member` (pas de rôles personnalisés). Ces rôles
+servent donc à l'administration de l'organisation (gestion des membres).
+Les rôles métier du brief (`manager`, `sales`, `viewer`) seront stockés dans
+une table `app` dédiée, protégée par la RLS — à concevoir avant le module CRM.
+Le créateur d'une organisation en devient `owner`.
 
 ## 2. Rôles Postgres
 
@@ -28,7 +32,7 @@ Un tel rôle ne peut donc pas être le rôle de l'application.
 | Rôle | Création | Usage |
 |---|---|---|
 | `angy_lp_owner` | Neon | Migrations uniquement. Contourne la RLS. |
-| `angy_lp_app` | Neon (API) | **Inutilisé** — contourne la RLS. Suppression à valider. |
+| ~~`angy_lp_app`~~ | Neon (API) | **Supprimé** le 2026-11-02 après audit (migration 0003). |
 | `angy_lp_web` | SQL | Connexion de l'application. Aucun privilège propre (`NOINHERIT`). |
 | `angy_lp_rls` | SQL | Rôle endossé par transaction (`SET LOCAL ROLE`). Seul détenteur des droits sur `app.*`. Soumis à la RLS. |
 
@@ -47,7 +51,8 @@ donc aucune ligne.
 
 ## 4. Tests
 
-`db/tests/0001_tenant_isolation.sql` — 12 tests, exécutés le 2026-11-02 sur `dev` : **12/12 OK**.
+`db/tests/0001_tenant_isolation.sql` — 13 tests, exécutés le 2026-11-02 sur `dev` : **13/13 OK**
+(dont l'interdiction des tables temporaires, ajoutée après la migration 0003).
 Le script annule toutes ses données en fin d'exécution.
 
 ## 5. Limites connues

@@ -28,7 +28,22 @@ Version : Phase 1 (Foundation) — novembre 2026
 
 ## 4. Rôles applicatifs
 
-`owner` · `admin` · `manager` · `sales` · `viewer` — stockés dans `neon_auth.member.role`, vérifiés côté serveur avant toute action.
+- Administration de l'organisation : `owner` · `admin` · `member` (Neon Auth, `neon_auth.member.role`).
+- Rôles métier : `manager` · `sales` · `viewer` — table `app` dédiée à créer avant le module CRM (Neon Auth n'accepte pas de rôles personnalisés).
+- Toujours vérifiés côté serveur avant toute action.
+
+## 4 bis. Authentification (Phase 1)
+
+| Élément | Fichier |
+|---|---|
+| Instance serveur Neon Auth | `src/lib/auth/server.ts` |
+| Accès à la session (DAL) | `src/lib/auth/session.ts` — `requireUser`, `requireTenant` |
+| Proxy des routes d'auth | `src/app/api/auth/[...path]/route.ts` |
+| Protection des routes | `src/proxy.ts` (`/app`, `/onboarding`) |
+| Écrans | `/auth/sign-in`, `/auth/sign-up`, `/onboarding`, `/app` |
+
+Parcours : inscription → création d'organisation (nom + secteur) → tableau de bord.
+Variables requises : `DATABASE_URL`, `NEON_AUTH_BASE_URL`, `NEON_AUTH_COOKIE_SECRET` (Vercel uniquement, jamais dans le dépôt).
 
 ## 5. Modules (feuille de route)
 
