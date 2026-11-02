@@ -2,7 +2,8 @@
 
 - Date : 2026-11-02
 - Périmètre : projet Neon `angy-lp` (branche `dev`), dépôt `angy-lead-pilote`
-- Statut : **aucun déploiement effectué** — en attente de validation
+- Statut : **prévisualisation déployée** (branche `dev`, protégée) — production bloquée jusqu'à validation
+- Mise à jour : voir section 9 (actions réalisées après validation du fondateur)
 
 ## 1. Synthèse
 
@@ -112,3 +113,39 @@ déploiement, les nouvelles valeurs étant saisies directement dans Vercel.
 - Les migrations n'ont été appliquées que sur `dev`. `main` reste vierge.
 - Les 16 alertes `npm audit` restantes concernent uniquement des outils de
   développement (ESLint), non déployés.
+
+## 9. Actions réalisées après validation (2026-11-02)
+
+| Point | Action | État |
+|---|---|---|
+| Connexion Google partagée | Fournisseur supprimé de Neon Auth (`dev`) | ✅ vérifié (liste vide) |
+| Nom de l'application | « Angy LP » (affiché dans les e-mails) | ✅ |
+| Domaine autorisé | `https://angy-lp-git-dev-angycompany.vercel.app` | ✅ |
+| Vérification d'e-mail | Écran `/auth/verify` (code à 6 chiffres) développé et testé | ✅ code — ⏳ activation par le fondateur dans la console |
+| `allow_localhost` | Conservé sur `dev` (développement local) | à désactiver sur `main` |
+| Mot de passe `angy_lp_web` | Changé ; nouvelle valeur uniquement dans Vercel (type *sensitive*) et `.env.local` | ✅ |
+| Mot de passe `angy_lp_owner` | Non changé par l'assistant (voir ci-dessous) | ⏳ fondateur |
+| Expéditeur des e-mails | Nécessite un fournisseur d'e-mail Angy Company | ⏳ fondateur |
+
+**Pourquoi le mot de passe `angy_lp_owner` n'est pas changé par l'assistant :**
+la réinitialisation via l'API Neon renverrait la nouvelle valeur dans les
+journaux de l'assistant, ce qui annulerait l'intérêt de la rotation. Ce rôle
+n'est pas utilisé par l'application. La réinitialisation se fait dans la
+console Neon par le fondateur ; les outils de l'assistant continuent de
+fonctionner (ils utilisent les identifiants gérés par Neon).
+
+**Neon refuse les empreintes SCRAM pré-calculées** : la rotation de
+`angy_lp_web` a dû transmettre la valeur en clair à la base. Elle apparaît
+donc dans les journaux de cette session (jamais dans GitHub).
+
+### Vérifications sur le déploiement de prévisualisation
+
+| Test | Résultat |
+|---|---|
+| Build Vercel (région fra1) | ✅ réussi |
+| Build de production sur `main` | ✅ annulé automatiquement (protection active) |
+| `GET /api/health` (connexion `angy_lp_web` → `angy_lp_rls`, sans BYPASSRLS) | ✅ `ok` |
+| Relais Neon Auth `/api/auth/get-session` | ✅ répond (aucune session) |
+| `/app` sans session | ✅ renvoie vers la connexion |
+| Accès au déploiement | ✅ protégé par l'authentification Vercel |
+| Inscription réelle de bout en bout | ⏳ à faire par le fondateur (réception du code par e-mail) |
